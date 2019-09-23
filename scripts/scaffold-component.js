@@ -6,9 +6,10 @@
 
 /* eslint-disable no-throw-literal,no-console */
 
-const fs = require('fs');
-const path = require('path');
-const chalk = require('chalk');
+const fs = require("fs");
+const path = require("path");
+const chalk = require("chalk");
+const getTemplate = require("./scaffold-templates").getTemplate;
 
 /*
   SCAFFOLDING SCRIPT
@@ -16,15 +17,15 @@ const chalk = require('chalk');
 const componentName = process.argv[2];
 
 if (!componentName) {
-  throw 'Component name was not passed. Usage: jss scaffold <ComponentName>';
+  throw "Component name was not passed. Usage: jss scaffold <ComponentName>";
 }
 
 if (!/^[A-Z][A-Za-z0-9-]+$/.test(componentName)) {
-  throw 'Component name should start with an uppercase letter and contain only letters and numbers.';
+  throw "Component name should start with an uppercase letter and contain only letters and numbers.";
 }
 
-const componentManifestDefinitionsPath = 'sitecore/definitions/components';
-const componentRootPath = 'src/components';
+const componentManifestDefinitionsPath = "sitecore/definitions/components";
+const componentRootPath = "src/components";
 
 let manifestOutputPath = null;
 
@@ -36,13 +37,29 @@ if (fs.existsSync(componentManifestDefinitionsPath)) {
   );
 }
 
-const componentOutputPath = scaffoldComponent();
+/*
+Components can be created from different scaffolding templates.
+Use flags when calling the `jss scaffold` command to speficiy which template to use.
+Supported flags:
+* --template=rfc - use template for react functional component
+* --template=rcc - use template for react class component
+*/
+let template = process.argv.find(arg => arg.indexOf("--template") === 0);
+if (template) {
+  template = template.split("=")[1];
+}
+
+const componentOutputPath = scaffoldComponent(
+  getTemplate(componentName, template)
+);
 
 console.log();
-console.log(chalk.green(`Component ${componentName} has been scaffolded.`));
-console.log(chalk.green('Next steps:'));
+console.log(chalk.green(`Component <${componentName}> has been scaffolded.`));
+console.log(chalk.green("Next steps:"));
 if (manifestOutputPath) {
-  console.log(`* Define the component's data in ${chalk.green(manifestOutputPath)}`);
+  console.log(
+    `* Define the component's data in ${chalk.green(manifestOutputPath)}`
+  );
 } else {
   console.log(
     `* Scaffold the component in Sitecore using '${chalk.green(
@@ -50,42 +67,31 @@ if (manifestOutputPath) {
     )}, or create the rendering item and datasource template yourself.`
   );
 }
-console.log(`* Implement the React component in ${chalk.green(componentOutputPath)}`);
+console.log(
+  `* Implement the React component in ${chalk.green(componentOutputPath)}`
+);
 if (manifestOutputPath) {
   console.log(
     `* Add the component to a route layout (/data/routes) and test it with ${chalk.green(
-      'jss start'
+      "jss start"
     )}`
   );
 } else {
   console.log(
     `* Deploy your app with the new component to Sitecore (${chalk.green(
-      'jss deploy:watch'
-    )} or ${chalk.green('jss deploy files')})`
+      "jss deploy:watch"
+    )} or ${chalk.green("jss deploy files")})`
   );
-  console.log(`* Add the component to a route using Sitecore Experience Editor, and test it.`);
+  console.log(
+    `* Add the component to a route using Sitecore Experience Editor, and test it.`
+  );
 }
 
 /*
   TEMPLATING FUNCTIONS
 */
 
-function scaffoldComponent() {
-  const exportVarName = componentName.replace(/[^\w]+/g, '');
-
-  const componentTemplate = `import React from 'react';
-import { Text } from '@sitecore-jss/sitecore-jss-react';
-
-const ${exportVarName} = (props) => (
-  <div>
-    <p>${componentName} Component</p>
-    <Text field={props.fields.heading} />
-  </div>
-);
-
-export default ${exportVarName};
-`;
-
+function scaffoldComponent(componentTemplate) {
   const outputDirectoryPath = path.join(componentRootPath, componentName);
 
   if (fs.existsSync(outputDirectoryPath)) {
@@ -94,29 +100,30 @@ export default ${exportVarName};
 
   fs.mkdirSync(outputDirectoryPath);
 
-  const outputFilePath = path.join(outputDirectoryPath, 'index.js');
+  const outputFilePath = path.join(outputDirectoryPath, "index.js");
 
-  fs.writeFileSync(outputFilePath, componentTemplate, 'utf8');
+  fs.writeFileSync(outputFilePath, componentTemplate, "utf8");
 
   return outputFilePath;
 }
 
 function scaffoldManifest() {
-  const manifestTemplate = `// eslint-disable-next-line no-unused-vars
-import { CommonFieldTypes, SitecoreIcon, Manifest } from '@sitecore-jss/sitecore-jss-manifest';
+  const manifestTemplate = `import {
+  CommonFieldTypes,
+  SitecoreIcon,
+  Manifest
+} from "@sitecore-jss/sitecore-jss-manifest";
 
 /**
- * Adds the ${componentName} component to the disconnected manifest.
+ * Adds the TestComponent component to the disconnected manifest.
  * This function is invoked by convention (*.sitecore.js) when 'jss manifest' is run.
  * @param {Manifest} manifest Manifest instance to add components to
  */
 export default function(manifest) {
   manifest.addComponent({
-    name: '${componentName}',
+    name: "TestComponent",
     icon: SitecoreIcon.DocumentTag,
-    fields: [
-      { name: 'heading', type: CommonFieldTypes.SingleLineText },
-    ],
+    fields: [{ name: "heading", type: CommonFieldTypes.SingleLineText }]
     /*
     If the component implementation uses <Placeholder> or withPlaceholder to expose a placeholder,
     register it here, or components added to that placeholder will not be returned by Sitecore:
@@ -135,7 +142,7 @@ export default function(manifest) {
     throw `Manifest definition path ${outputFilePath} already exists. Not creating manifest definition.`;
   }
 
-  fs.writeFileSync(outputFilePath, manifestTemplate, 'utf8');
+  fs.writeFileSync(outputFilePath, manifestTemplate, "utf8");
 
   return outputFilePath;
 }
