@@ -1,20 +1,20 @@
-const path = require('path');
-const env = require('@babel/preset-env');
-const reactApp = require('babel-preset-react-app');
+const path = require("path");
+const env = require("@babel/preset-env");
+const reactApp = require("babel-preset-react-app");
 // Webpack build configuration to build the SSR bundle.
 // Invoked by build:server.
 
 module.exports = {
-  mode: 'production',
-  entry: path.resolve(__dirname, './server.js'),
-  target: 'node',
+  mode: "production",
+  entry: path.resolve(__dirname, "./server.js"),
+  target: "node",
   output: {
-    path: path.resolve(__dirname, '../build'),
-    filename: '../build/server.bundle.js',
-    libraryTarget: 'this',
+    path: path.resolve(__dirname, "../build"),
+    filename: "../build/server.bundle.js",
+    libraryTarget: "this"
   },
   optimization: {
-    minimize: false,
+    minimize: false
   },
   module: {
     rules: [
@@ -22,17 +22,17 @@ module.exports = {
         test: /\.m?jsx?$/,
         exclude: /node_modules/,
         use: {
-          loader: 'babel-loader',
+          loader: "babel-loader",
           options: {
             babelrc: false,
-            presets: [env, reactApp],
-          },
-        },
+            presets: [env, reactApp]
+          }
+        }
       },
       {
         test: /\.html$/,
         exclude: /node_modules/,
-        use: { loader: 'html-loader' },
+        use: { loader: "html-loader" }
       },
       {
         // anything not JS or HTML, we load as a URL
@@ -40,8 +40,8 @@ module.exports = {
         test: /\.(?!js|mjs|jsx|html|graphql$)[^.]+$/,
         exclude: /node_modules/,
         use: {
-          loader: 'url-loader',
-        },
+          loader: "url-loader"
+        }
       },
       {
         // anything in node_modules that isn't js,
@@ -50,9 +50,9 @@ module.exports = {
         test: /\.(?!js|mjs|jsx|html|graphql$)[^.]+$/,
         include: /node_modules/,
         use: {
-          loader: 'null-loader',
-        },
-      },
-    ],
-  },
+          loader: "null-loader"
+        }
+      }
+    ]
+  }
 };

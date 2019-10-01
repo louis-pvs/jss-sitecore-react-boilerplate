@@ -1,4 +1,4 @@
-const configGenerator = require('./generate-config');
+const configGenerator = require("./generate-config");
 
 /*
   BOOTSTRAPPING
@@ -7,7 +7,7 @@ const configGenerator = require('./generate-config');
   and the global config module.
 */
 
-const disconnected = process.argv.some((arg) => arg === '--disconnected');
+const disconnected = process.argv.some(arg => arg === "--disconnected");
 
 /*
   CONFIG GENERATION
@@ -15,10 +15,12 @@ const disconnected = process.argv.some((arg) => arg === '--disconnected');
   that the app can import and use.
 */
 const port = process.env.PORT || 3000;
-const configOverride = disconnected ? { sitecoreApiHost: `http://localhost:${port}` } : null;
+const configOverride = disconnected
+  ? { sitecoreApiHost: `http://localhost:${port}` }
+  : null;
 configGenerator(configOverride);
 
 /*
   COMPONENT FACTORY GENERATION
 */
-require('./generate-component-factory');
+require("./generate-component-factory");

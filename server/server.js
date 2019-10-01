@@ -1,14 +1,14 @@
-import serializeJavascript from 'serialize-javascript';
-import React from 'react';
-import { StaticRouter, matchPath } from 'react-router-dom';
-import { renderToStringWithData } from 'react-apollo';
-import Helmet from 'react-helmet';
-import GraphQLClientFactory from '../src/lib/GraphQLClientFactory';
-import config from '../src/temp/config';
-import i18ninit from '../src/i18n';
-import AppRoot, { routePatterns } from '../src/AppRoot';
-import { setServerSideRenderingState } from '../src/RouteHandler';
-import indexTemplate from '../build/index.html';
+import serializeJavascript from "serialize-javascript";
+import React from "react";
+import { StaticRouter, matchPath } from "react-router-dom";
+import { renderToStringWithData } from "react-apollo";
+import Helmet from "react-helmet";
+import GraphQLClientFactory from "../src/lib/GraphQLClientFactory";
+import config from "../src/temp/config";
+import i18ninit from "../src/i18n";
+import AppRoot, { routePatterns } from "../src/AppRoot";
+import { setServerSideRenderingState } from "../src/RouteHandler";
+import indexTemplate from "../build/index.html";
 
 /** Asserts that a string replace actually replaced something */
 function assertReplace(string, value, replacement) {
@@ -65,10 +65,14 @@ export function renderView(callback, path, data, viewBag) {
         // is included in the SSR'ed markup instead of whatever the 'loading' state is.
         // Not using GraphQL? Use ReactDOMServer.renderToString() instead.
         renderToStringWithData(
-          <AppRoot path={path} Router={StaticRouter} graphQLClient={graphQLClient} />
+          <AppRoot
+            path={path}
+            Router={StaticRouter}
+            graphQLClient={graphQLClient}
+          />
         )
       )
-      .then((renderedAppHtml) => {
+      .then(renderedAppHtml => {
         const helmet = Helmet.renderStatic();
 
         // We remove the viewBag from the server-side state before sending it back to the client.
@@ -98,21 +102,24 @@ export function renderView(callback, path, data, viewBag) {
         html = assertReplace(
           html,
           '<script type="application/json" id="__JSS_STATE__">null',
-          `<script type="application/json" id="__JSS_STATE__">${serializeJavascript(state, {
-            isJSON: true,
-          })}`
+          `<script type="application/json" id="__JSS_STATE__">${serializeJavascript(
+            state,
+            {
+              isJSON: true
+            }
+          )}`
         );
 
         // render <head> contents from react-helmet
         html = assertReplace(
           html,
-          '<head>',
+          "<head>",
           `<head>${helmet.title.toString()}${helmet.meta.toString()}${helmet.link.toString()}`
         );
 
         callback(null, { html });
       })
-      .catch((error) => callback(error, null));
+      .catch(error => callback(error, null));
   } catch (err) {
     // need to ensure the callback is always invoked no matter what
     // or else SSR will hang
@@ -140,7 +147,7 @@ export function parseRouteUrl(url) {
   // use react-router-dom to find the route matching the incoming URL
   // then return its match params
   // we are using .some() as a way to loop with a short circuit (so that we stop evaluating route patterns after the first match)
-  routePatterns.some((pattern) => {
+  routePatterns.some(pattern => {
     const match = matchPath(url, { path: pattern });
     if (match && match.params) {
       result = match.params;
@@ -155,17 +162,19 @@ export function parseRouteUrl(url) {
 
 function parseServerData(data, viewBag) {
   const parsedData = data instanceof Object ? data : JSON.parse(data);
-  const parsedViewBag = viewBag instanceof Object ? viewBag : JSON.parse(viewBag);
+  const parsedViewBag =
+    viewBag instanceof Object ? viewBag : JSON.parse(viewBag);
 
   return {
     viewBag: parsedViewBag,
-    sitecore: parsedData && parsedData.sitecore,
+    sitecore: parsedData && parsedData.sitecore
   };
 }
 
 function initializei18n(state) {
   // don't init i18n for not found routes
-  if (!state || !state.sitecore || !state.sitecore.context) return Promise.resolve();
+  if (!state || !state.sitecore || !state.sitecore.context)
+    return Promise.resolve();
 
   return i18ninit(state.sitecore.context.language, state.viewBag.dictionary);
 }

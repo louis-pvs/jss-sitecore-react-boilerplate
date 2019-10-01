@@ -1,5 +1,5 @@
-import React from 'react';
-import { Text, RichText } from '@sitecore-jss/sitecore-jss-react';
+import React from "react";
+import { Text, RichText } from "@sitecore-jss/sitecore-jss-react";
 
 /**
  * A simple Content Block component, with a heading and rich text block.

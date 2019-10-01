@@ -1,8 +1,8 @@
 /* eslint-disable no-console, no-underscore-dangle */
 
-import fetch from 'isomorphic-fetch';
-import fs from 'fs';
-import generateConfig from './generate-config';
+import fetch from "isomorphic-fetch";
+import fs from "fs";
+import generateConfig from "./generate-config";
 
 // Apollo Client supports caching GraphQL responses, which can greatly reduce network traffic needs.
 // In order to work correctly with interfaces in GraphQL, it needs to know some basic information about
@@ -17,20 +17,22 @@ let jssConfig;
 
 try {
   // eslint-disable-next-line global-require
-  jssConfig = require('../src/temp/config').default;
+  jssConfig = require("../src/temp/config").default;
 } catch (e) {
   console.error(
-    'Unable to require JSS config. Ensure `jss setup` has been run, and the app has been started at least once after setup.'
+    "Unable to require JSS config. Ensure `jss setup` has been run, and the app has been started at least once after setup."
   );
   console.error(e);
   process.exit(1);
 }
 
-console.log(`Updating GraphQL fragment type data from ${jssConfig.graphQLEndpoint}...`);
+console.log(
+  `Updating GraphQL fragment type data from ${jssConfig.graphQLEndpoint}...`
+);
 
 fetch(jssConfig.graphQLEndpoint, {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
     query: `
       {
@@ -44,31 +46,33 @@ fetch(jssConfig.graphQLEndpoint, {
           }
         }
       }
-    `,
-  }),
+    `
+  })
 })
-  .then((result) => result.json())
-  .then((result) => {
+  .then(result => result.json())
+  .then(result => {
     // here we're filtering out any type information unrelated to unions or interfaces
-    const filteredData = result.data.__schema.types.filter((type) => type.possibleTypes !== null);
+    const filteredData = result.data.__schema.types.filter(
+      type => type.possibleTypes !== null
+    );
 
     const filteredResult = { ...result };
     filteredResult.data.__schema.types = filteredData;
 
     fs.writeFile(
-      './src/temp/GraphQLFragmentTypes.json',
+      "./src/temp/GraphQLFragmentTypes.json",
       JSON.stringify(filteredResult.data, null, 2),
-      (err) => {
+      err => {
         if (err) {
-          console.error('Error writing GraphQLFragmentTypes file', err);
+          console.error("Error writing GraphQLFragmentTypes file", err);
           return;
         }
 
-        console.log('GraphQL Fragment types successfully extracted!');
+        console.log("GraphQL Fragment types successfully extracted!");
       }
     );
   })
-  .catch((e) => {
+  .catch(e => {
     console.error(e);
     process.exit(1);
   });

@@ -105,7 +105,7 @@
     "clean:modules": "rimraf node_modules yarn.lock",
     "clean:build": "rimraf build",
     "lint": "npm-run-all --serial lint:script lint:style",
-    "lint:script": "prettier-eslint --write \"{src,server,script}/**/*.{js,jsx}\" ",
+    "lint:script": "prettier-eslint --write \"{scripts,server,sitecore,src}/**/*.{js,jsx}\" ",
     "lint:style": "prettier-stylelint --write \"src/**/*.{css,scss}\" "
   },
   "browserslist": [

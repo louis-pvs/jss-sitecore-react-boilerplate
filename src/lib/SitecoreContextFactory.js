@@ -1,4 +1,4 @@
-import { SitecoreContextFactory } from '@sitecore-jss/sitecore-jss-react';
+import { SitecoreContextFactory } from "@sitecore-jss/sitecore-jss-react";
 
 /*
   The SitecoreContextFactory stores the current Sitecore context for the app.

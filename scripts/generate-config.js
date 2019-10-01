@@ -1,6 +1,6 @@
-const fs = require('fs');
-const path = require('path');
-const packageConfig = require('../package.json');
+const fs = require("fs");
+const path = require("path");
+const packageConfig = require("../package.json");
 
 /* eslint-disable no-console */
 
@@ -14,9 +14,9 @@ const packageConfig = require('../package.json');
  */
 module.exports = function generateConfig(configOverrides) {
   const defaultConfig = {
-    sitecoreApiKey: 'no-api-key-set',
-    sitecoreApiHost: '',
-    jssAppName: 'Unknown',
+    sitecoreApiKey: "no-api-key-set",
+    sitecoreApiHost: "",
+    jssAppName: "Unknown"
   };
 
   // require + combine config sources
@@ -29,7 +29,12 @@ module.exports = function generateConfig(configOverrides) {
   // package.json config can override the calculated config,
   // scjssconfig.json overrides it,
   // and finally config passed in the configOverrides param wins.
-  const config = Object.assign(defaultConfig, scjssConfig, packageJson, configOverrides);
+  const config = Object.assign(
+    defaultConfig,
+    scjssConfig,
+    packageJson,
+    configOverrides
+  );
 
   // The GraphQL endpoint is an example of making a _computed_ config setting
   // based on other config settings.
@@ -40,11 +45,11 @@ module.exports = function generateConfig(configOverrides) {
 // See scripts/bootstrap.js to modify the generation of this file.
 module.exports = ${JSON.stringify(config, null, 2)};`;
 
-  const configPath = path.resolve('src/temp/config.js');
+  const configPath = path.resolve("src/temp/config.js");
 
   console.log(`Writing runtime config to ${configPath}`);
 
-  fs.writeFileSync(configPath, configText, { encoding: 'utf8' });
+  fs.writeFileSync(configPath, configText, { encoding: "utf8" });
 };
 
 function transformScJssConfig() {
@@ -53,7 +58,7 @@ function transformScJssConfig() {
   let config;
   try {
     // eslint-disable-next-line global-require
-    config = require('../scjssconfig.json');
+    config = require("../scjssconfig.json");
   } catch (e) {
     return {};
   }
@@ -62,7 +67,7 @@ function transformScJssConfig() {
 
   return {
     sitecoreApiKey: config.sitecore.apiKey,
-    sitecoreApiHost: config.sitecore.layoutServiceHost,
+    sitecoreApiHost: config.sitecore.layoutServiceHost
   };
 }
 
@@ -71,8 +76,8 @@ function transformPackageConfig() {
 
   return {
     jssAppName: packageConfig.config.appName,
-    defaultLanguage: packageConfig.config.language || 'en',
-    graphQLEndpointPath: packageConfig.config.graphQLEndpointPath || null,
+    defaultLanguage: packageConfig.config.language || "en",
+    graphQLEndpointPath: packageConfig.config.graphQLEndpointPath || null
   };
 }
 
@@ -80,15 +85,16 @@ function transformPackageConfig() {
  * Adds the GraphQL endpoint URL to the config object, and ensures that components needed to calculate it are valid
  */
 function addGraphQLConfig(baseConfig) {
-  if (!baseConfig.graphQLEndpointPath || typeof baseConfig.sitecoreApiHost === 'undefined') {
+  if (
+    !baseConfig.graphQLEndpointPath ||
+    typeof baseConfig.sitecoreApiHost === "undefined"
+  ) {
     console.error(
-      'The `graphQLEndpointPath` and/or `layoutServiceHost` configurations were not defined. You may need to run `jss setup`.'
+      "The `graphQLEndpointPath` and/or `layoutServiceHost` configurations were not defined. You may need to run `jss setup`."
     );
     process.exit(1);
   }
 
   // eslint-disable-next-line no-param-reassign
-  baseConfig.graphQLEndpoint = `${baseConfig.sitecoreApiHost}${
-    baseConfig.graphQLEndpointPath
-  }?sc_apikey=${baseConfig.sitecoreApiKey}`;
+  baseConfig.graphQLEndpoint = `${baseConfig.sitecoreApiHost}${baseConfig.graphQLEndpointPath}?sc_apikey=${baseConfig.sitecoreApiKey}`;
 }

@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-unused-vars
-import { Manifest } from '@sitecore-jss/sitecore-jss-manifest';
-import { mergeFs } from '@sitecore-jss/sitecore-jss-dev-tools';
-import fs from 'fs';
+import { Manifest } from "@sitecore-jss/sitecore-jss-manifest";
+import { mergeFs } from "@sitecore-jss/sitecore-jss-dev-tools";
+import fs from "fs";
 
 /**
  * Reads dictionary definition file in /data/dictionary,
@@ -11,21 +11,21 @@ import fs from 'fs';
  * @returns {Promise}
  */
 export default function addDictionaryToManifest(manifest) {
-  const startPath = './data/dictionary'; // relative to process invocation (i.e. where package.json lives)
+  const startPath = "./data/dictionary"; // relative to process invocation (i.e. where package.json lives)
 
   if (!fs.existsSync(startPath)) return;
 
   // eslint-disable-next-line consistent-return
   return mergeFs(startPath)
-    .then((result) => mergeDictionaryFiles(result, manifest.language))
-    .then((mergedDictionary) => convertToManifestDictionary(mergedDictionary))
-    .then((dictionary) => manifest.addDictionary(dictionary));
+    .then(result => mergeDictionaryFiles(result, manifest.language))
+    .then(mergedDictionary => convertToManifestDictionary(mergedDictionary))
+    .then(dictionary => manifest.addDictionary(dictionary));
 }
 
 function convertToManifestDictionary(mergedDictionary) {
-  return Object.keys(mergedDictionary).map((key) => ({
+  return Object.keys(mergedDictionary).map(key => ({
     key,
-    value: mergedDictionary[key],
+    value: mergedDictionary[key]
     // optional: if you wished to specify the exact ID of a dictionary item when imported,
     // you could pass an 'id' property here that was a GUID or unique (app-wide) string
   }));
@@ -41,8 +41,13 @@ function mergeDictionaryFiles(data, language) {
   let dictionaryResult = {};
 
   // regex that matches the expected dictionary file name
-  const dictionaryFilePattern = new RegExp(`^${language}\\.(yaml|yml|json)$`, 'i');
-  const dictionaryFileData = data.files.find((f) => dictionaryFilePattern.test(f.filename));
+  const dictionaryFilePattern = new RegExp(
+    `^${language}\\.(yaml|yml|json)$`,
+    "i"
+  );
+  const dictionaryFileData = data.files.find(f =>
+    dictionaryFilePattern.test(f.filename)
+  );
 
   if (dictionaryFileData && dictionaryFileData.contents) {
     // customize here to modify the dictionary or apply conventions

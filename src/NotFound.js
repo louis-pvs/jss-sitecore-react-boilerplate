@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 // Renders a route-not-found message when no route is available from Sitecore
 // The JSS equivalent of a 404 Not Found page.
@@ -8,7 +8,7 @@ import React from 'react';
 // This can be used to power parts of your site, such as navigation, from LS context additions
 // without losing the ability to render them on your 404 pages :)
 
-const NotFound = ({ context = { site: { name: '' }, language: '' } }) => (
+const NotFound = ({ context = { site: { name: "" }, language: "" } }) => (
   <React.Fragment>
     <h1>Page not found</h1>
     <p>This page does not exist.</p>

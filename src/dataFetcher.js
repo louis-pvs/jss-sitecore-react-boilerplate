@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from "axios";
 
 /**
  * Implements a data fetcher using Axios - replace with your favorite
@@ -10,10 +10,10 @@ import axios from 'axios';
 export function dataFetcher(url, data) {
   return axios({
     url,
-    method: data ? 'POST' : 'GET',
+    method: data ? "POST" : "GET",
     data,
     // note: axios needs to use `withCredentials: true` in order for Sitecore cookies to be included in CORS requests
     // which is necessary for analytics and such
-    withCredentials: true,
+    withCredentials: true
   });
 }

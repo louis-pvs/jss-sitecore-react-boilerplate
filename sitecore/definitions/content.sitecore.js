@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-vars */
-import { Manifest, ItemDefinition } from '@sitecore-jss/sitecore-jss-manifest';
-import { mergeFs, MergeFsResult } from '@sitecore-jss/sitecore-jss-dev-tools';
-import path from 'path';
-import fs from 'fs';
+import { Manifest, ItemDefinition } from "@sitecore-jss/sitecore-jss-manifest";
+import { mergeFs, MergeFsResult } from "@sitecore-jss/sitecore-jss-dev-tools";
+import path from "path";
+import fs from "fs";
 /* eslint-enable no-unused-vars */
 
 /**
@@ -13,13 +13,13 @@ import fs from 'fs';
  * @returns {Promise}
  */
 export default function addContentToManifest(manifest) {
-  const rootItemName = 'Content';
-  const startPath = './data/content'; // relative to process invocation (i.e. where package.json lives)
+  const rootItemName = "Content";
+  const startPath = "./data/content"; // relative to process invocation (i.e. where package.json lives)
 
   if (!fs.existsSync(startPath)) return Promise.resolve();
 
   return mergeFs(startPath)
-    .then((result) => {
+    .then(result => {
       const items = convertToItems(
         result,
         path.resolve(startPath),
@@ -28,7 +28,7 @@ export default function addContentToManifest(manifest) {
       );
       return items;
     })
-    .then((contentData) => {
+    .then(contentData => {
       if (contentData) {
         manifest.addContent(contentData);
       }
@@ -45,13 +45,15 @@ export default function addContentToManifest(manifest) {
  */
 function convertToItems(data, basePath, rootItemName, language) {
   const itemPath = convertPhsyicalPathToItemRelativePath(data.path, basePath);
-  const name = itemPath.substr(itemPath.lastIndexOf('/') + 1);
+  const name = itemPath.substr(itemPath.lastIndexOf("/") + 1);
 
   let result;
 
-  const contentItemPattern = new RegExp(`^${language}\\.(yaml|yml|json)$`, 'i');
+  const contentItemPattern = new RegExp(`^${language}\\.(yaml|yml|json)$`, "i");
 
-  const contentFileData = data.files.find((f) => contentItemPattern.test(f.filename));
+  const contentFileData = data.files.find(f =>
+    contentItemPattern.test(f.filename)
+  );
 
   if (contentFileData && contentFileData.contents) {
     // the path has a valid content item definition
@@ -73,16 +75,16 @@ function convertToItems(data, basePath, rootItemName, language) {
       path: itemPath,
       name: name || rootItemName,
       displayName: name || rootItemName,
-      template: 'Folder',
-      children: [],
+      template: "Folder",
+      children: []
     };
   }
 
   // recursively process child paths
   if (data.folders.length > 0) {
     result.children = data.folders
-      .map((folder) => convertToItems(folder, basePath, rootItemName, language))
-      .filter((item) => item); // remove null results
+      .map(folder => convertToItems(folder, basePath, rootItemName, language))
+      .filter(item => item); // remove null results
   }
 
   return result;
@@ -95,10 +97,12 @@ function convertToItems(data, basePath, rootItemName, language) {
  * @param {string} basePath
  */
 function convertPhsyicalPathToItemRelativePath(physicalPath, basePath) {
-  const targetPathSeparator = '/';
+  const targetPathSeparator = "/";
 
   // normalize path separators to /
-  const normalizedPath = physicalPath.replace(basePath, '').replace(/\\/g, targetPathSeparator);
+  const normalizedPath = physicalPath
+    .replace(basePath, "")
+    .replace(/\\/g, targetPathSeparator);
 
   if (!normalizedPath) {
     return targetPathSeparator;
