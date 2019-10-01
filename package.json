@@ -72,6 +72,8 @@
     "graphql.macro": "^1.4.2",
     "html-loader": "~0.5.5",
     "http-proxy-middleware": "^0.20.0",
+    "husky": "^3.0.7",
+    "lint-staged": "^9.4.0",
     "npm-run-all": "^4.1.5",
     "null-loader": "^3.0.0",
     "prettier": "^1.18.2",
@@ -113,5 +115,20 @@
     "not dead",
     "not ie <= 9",
     "not op_mini all"
-  ]
+  ],
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,jsx}": [
+      "yarn lint:script",
+      "git add"
+    ],
+    "*.{css,scss,sass}": [
+      "yarn lint:style",
+      "git add"
+    ]
+  }
 }
