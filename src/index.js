@@ -6,6 +6,7 @@ import { setServerSideRenderingState } from "./RouteHandler";
 import GraphQLClientFactory from "./lib/GraphQLClientFactory";
 import config from "./temp/config";
 import i18ninit from "./i18n";
+import axeInit from "./axe";
 
 /* eslint-disable no-underscore-dangle */
 
@@ -60,7 +61,7 @@ const graphQLClient = GraphQLClientFactory(
 */
 // initialize the dictionary, then render the app
 // note: if not making a multlingual app, the dictionary init can be removed.
-i18ninit().then(() => {
+Promise.all([i18ninit(), axeInit()]).then(() => {
   // HTML element to place the app into
   const rootElement = document.getElementById("root");
 
