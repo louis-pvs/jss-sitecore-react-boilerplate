@@ -7,6 +7,7 @@ import GraphQLClientFactory from "./lib/GraphQLClientFactory";
 import config from "./temp/config";
 import i18ninit from "./i18n";
 import axeInit from "./axe";
+import "./assets/app.css";
 
 /* eslint-disable no-underscore-dangle */
 
