@@ -1,5 +1,6 @@
 import React from "react";
 import { Text, RichText } from "@sitecore-jss/sitecore-jss-react";
+import PropTypes from "prop-types";
 
 /**
  * A simple Content Block component, with a heading and rich text block.
@@ -13,5 +14,12 @@ const ContentBlock = ({ fields }) => (
     <RichText className="contentDescription" field={fields.content} />
   </React.Fragment>
 );
+
+ContentBlock.propTypes = {
+  fields: PropTypes.shape({
+    heading: PropTypes.shape({}),
+    content: PropTypes.shape({})
+  }).isRequired
+};
 
 export default ContentBlock;
