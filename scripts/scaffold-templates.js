@@ -4,12 +4,19 @@ module.exports.getTemplate = (componentName, template) => {
     // Template for React Class Component
     rcc: `import React, { Component, Fragment } from "react";
 import { Text, RichText } from "@sitecore-jss/sitecore-jss-react";
+import PropTypes from "prop-types";
 
 /**
  * A scaffold class component, with a heading and rich text block.
  * This is the sample component with example usage on sitecode fields
  */
 class ${exportVarName} extends Component {
+  static propTypes = {
+    fields: PropTypes.shape({
+      heading: PropTypes.shape({}),
+      content: PropTypes.shape({})
+    }).isRequired
+  };
   render() {
     const { fields } = this.props;
     return (
@@ -27,6 +34,7 @@ export default ${exportVarName};
     // Template for React Functional Component
     rfc: `import React, { Fragment } from "react";
 import { Text, RichText } from "@sitecore-jss/sitecore-jss-react";
+import PropTypes from "prop-types";
 
 /**
  * A scaffold functional component, with a heading and rich text block.
@@ -38,6 +46,13 @@ const ${exportVarName} = ({ fields }) => (
     <RichText field={fields.content} />
   </Fragment>
 );
+
+${exportVarName}.propTypes = {
+  fields: PropTypes.shape({
+    heading: PropTypes.shape({}),
+    content: PropTypes.shape({})
+  }).isRequired
+};
 
 export default ${exportVarName};
 `,
@@ -66,6 +81,19 @@ export default function(manifest) {
     ]
   });
 }
+`,
+
+    styleguide: `${`<${exportVarName} />`} example:
+
+${"```" +
+  `jsx inside Markdown
+<${exportVarName}
+  fields={{
+    heading: { value: "Placeholder for heading field" }, // from jss manifest API
+    content: { value: "Placeholder for content field" } // from jss manifest API
+  }}
+/>` +
+  "\n```"}
 `
   };
 
@@ -73,8 +101,7 @@ export default function(manifest) {
     return templates[template];
   }
 
-  console.log(
-    "No component template or invalid template specified, using React Functional Component template."
-  );
+  console.log("No template found");
+
   return templates.rfc;
 };
