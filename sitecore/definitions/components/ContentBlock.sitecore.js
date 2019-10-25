@@ -1,8 +1,7 @@
 // eslint-disable-next-line no-unused-vars
 import {
   CommonFieldTypes,
-  SitecoreIcon,
-  Manifest
+  SitecoreIcon
 } from "@sitecore-jss/sitecore-jss-manifest";
 
 /**
@@ -18,7 +17,8 @@ export default function(manifest) {
     icon: SitecoreIcon.DocumentTag,
     fields: [
       { name: "heading", type: CommonFieldTypes.SingleLineText },
-      { name: "content", type: CommonFieldTypes.RichText }
+      { name: "content", type: CommonFieldTypes.RichText },
+      { name: "dkLink", type: CommonFieldTypes.GeneralLink }
     ]
   });
 }

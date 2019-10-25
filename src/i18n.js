@@ -46,10 +46,7 @@ export default function i18nInit(language, dictionary) {
         loadPath: dictionaryServicePath,
         parse: data => {
           const parsedData = JSON.parse(data);
-          if (parsedData.phrases) {
-            return parsedData.phrases;
-          }
-          return parsedData;
+          return parsedData.phrases || parsedData;
         }
       };
 

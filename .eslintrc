@@ -1,11 +1,11 @@
 {
   "extends": [
+    "eslint:recommended",
     "prettier",
-    "plugin:import/errors",
-    "plugin:import/warnings",
     "plugin:prettier/recommended",
     "plugin:react/recommended",
-    "plugin:jsx-a11y/recommended"
+    "plugin:jsx-a11y/recommended",
+    "plugin:testing-library/recommended"
   ],
   "parser": "babel-eslint",
   "parserOptions": {
@@ -15,7 +15,8 @@
       "jsx": true
     }
   },
-  "plugins": ["import", "react", "prettier"],
+  "env": { "browser": true, "node": true, "es6": true, "jest": true },
+  "plugins": ["import", "react", "prettier", "testing-library"],
   "settings": {
     "import/ignore": ["node_modules", ".png$", ".jpg$"],
     "react": {

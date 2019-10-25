@@ -2,12 +2,11 @@ import serializeJavascript from "serialize-javascript";
 import React from "react";
 import { StaticRouter, matchPath } from "react-router-dom";
 import { renderToStringWithData } from "react-apollo";
-import Helmet from "react-helmet";
+import { createMemoryHistory } from "history";
 import GraphQLClientFactory from "../src/lib/GraphQLClientFactory";
 import config from "../src/temp/config";
 import i18ninit from "../src/i18n";
 import AppRoot, { routePatterns } from "../src/AppRoot";
-import { setServerSideRenderingState } from "../src/RouteHandler";
 import indexTemplate from "../build/index.html";
 
 /** Asserts that a string replace actually replaced something */
@@ -33,6 +32,8 @@ export const apiKey = config.sitecoreApiKey;
 /** Export the app name. This will be used by default in Headless mode, removing the need to manually configure the app name on the proxy. */
 export const appName = config.jssAppName;
 
+const helmetContext = {};
+
 /**
  * Main entry point to the application when run via Server-Side Rendering,
  * either in Integrated Mode, or with a Node proxy host like the node-headless-ssr-proxy sample.
@@ -45,8 +46,6 @@ export const appName = config.jssAppName;
 export function renderView(callback, path, data, viewBag) {
   try {
     const state = parseServerData(data, viewBag);
-
-    setServerSideRenderingState(state);
 
     /*
       GraphQL Data
@@ -66,22 +65,21 @@ export function renderView(callback, path, data, viewBag) {
         // Not using GraphQL? Use ReactDOMServer.renderToString() instead.
         renderToStringWithData(
           <AppRoot
-            path={path}
+            history={createMemoryHistory({ initialEntries: [path] })}
             Router={StaticRouter}
             graphQLClient={graphQLClient}
+            helmetContext={helmetContext}
           />
         )
       )
       .then(renderedAppHtml => {
-        const helmet = Helmet.renderStatic();
-
         // We remove the viewBag from the server-side state before sending it back to the client.
         // This saves bandwidth, because by default the viewBag contains the translation dictionary,
         // which is better cached as a separate client HTTP request than on every page, and HTTP context
         // information that is not meaningful to the client-side rendering.
         // If you wish to place items in the viewbag that are needed by client-side rendering, this
         // can be removed - but still delete state.viewBag.dictionary, at least.
-        delete state.viewBag;
+        state.viewBag = undefined;
 
         // We add the GraphQL state to the SSR state so that we can avoid refetching queries after client load
         // Not using GraphQL? Get rid of this.
@@ -109,13 +107,15 @@ export function renderView(callback, path, data, viewBag) {
             }
           )}`
         );
-
-        // render <head> contents from react-helmet
-        html = assertReplace(
-          html,
-          "<head>",
-          `<head>${helmet.title.toString()}${helmet.meta.toString()}${helmet.link.toString()}`
-        );
+        if (helmetContext.helmet) {
+          // render <head> contents from react-helmet-async
+          const { helmet } = helmetContext;
+          html = assertReplace(
+            html,
+            "<head>",
+            `<head>${helmet.title.toString()}${helmet.meta.toString()}${helmet.link.toString()}`
+          );
+        }
 
         callback(null, { html });
       })
@@ -138,9 +138,7 @@ export function renderView(callback, path, data, viewBag) {
  * @returns { sitecoreRoute?: string, lang?: string }
  */
 export function parseRouteUrl(url) {
-  if (!url) {
-    return null;
-  }
+  if (!url) return null;
 
   let result = null;
 
@@ -173,8 +171,9 @@ function parseServerData(data, viewBag) {
 
 function initializei18n(state) {
   // don't init i18n for not found routes
-  if (!state || !state.sitecore || !state.sitecore.context)
+  if (!state || !state.sitecore || !state.sitecore.context) {
     return Promise.resolve();
+  }
 
   return i18ninit(state.sitecore.context.language, state.viewBag.dictionary);
 }

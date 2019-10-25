@@ -1,0 +1,22 @@
+{
+  "name": "about",
+  "id": "about",
+  "fields": {
+    "pageTitle": "About Page"
+  },
+  "placeholders": {
+    "jss-main": [
+      {
+        "componentName": "ContentBlock",
+        "fields": {
+          "heading": "About Page",
+          "content": "Hello world",
+          "dkLink": {
+            "href": "/da-dk/",
+            "text": "to da-dk language"
+          }
+        }
+      }
+    ]
+  }
+}

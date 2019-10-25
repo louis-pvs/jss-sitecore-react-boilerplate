@@ -10,7 +10,7 @@ module.exports = function overrides(config, env) {
 
   if (isProd) {
     // add webpack performance hints config https://webpack.js.org/configuration/performance/
-    if (!!config.performance) warnDefaultExist("performance");
+    if (config.performance) warnDefaultExist("performance");
     overridedConfig.performance = {
       maxAssetSize: 170000,
       maxEntrypointSize: 170000,
