@@ -1,6 +1,6 @@
 import React from "react";
 import i18n from "i18next";
-import Helmet from "react-helmet";
+import { Helmet } from "react-helmet-async";
 import {
   isExperienceEditorActive,
   dataApi

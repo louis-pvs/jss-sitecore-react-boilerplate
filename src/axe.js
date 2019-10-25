@@ -3,15 +3,11 @@
  * configure and init react-axe
  */
 
-export default function axeInit() {
+export default function axeInit(React, ReactDOM) {
   // do not include react-axe in production mode
   if (process.env.NODE_ENV !== "production") {
     const config = {};
-    return Promise.all([
-      import("react"),
-      import("react-dom"),
-      import("react-axe")
-    ]).then(([React, ReactDOM, axe]) => {
+    return import("react-axe").then(axe => {
       axe.default(React, ReactDOM, 1000, config);
     });
   } else {

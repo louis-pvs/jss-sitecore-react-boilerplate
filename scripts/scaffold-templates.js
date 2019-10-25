@@ -2,7 +2,7 @@ module.exports.getTemplate = (componentName, template) => {
   const exportVarName = componentName.replace(/[^\w]+/g, "");
   const templates = {
     // Template for React Class Component
-    rcc: `import React, { Component, Fragment } from "react";
+    rcc: `import React, { Component } from "react";
 import { Text, RichText } from "@sitecore-jss/sitecore-jss-react";
 import PropTypes from "prop-types";
 
@@ -20,10 +20,10 @@ class ${exportVarName} extends Component {
   render() {
     const { fields } = this.props;
     return (
-      <Fragment>
-        <Text tag="h2" field={fields.heading} />
+      <main>
+        <Text tag="h1" field={fields.heading} />
         <RichText field={fields.content} />
-      </Fragment>
+      </main>
     );
   }
 }
@@ -32,7 +32,7 @@ export default ${exportVarName};
 `,
 
     // Template for React Functional Component
-    rfc: `import React, { Fragment } from "react";
+    rfc: `import React from "react";
 import { Text, RichText } from "@sitecore-jss/sitecore-jss-react";
 import PropTypes from "prop-types";
 
@@ -41,10 +41,10 @@ import PropTypes from "prop-types";
  * This is the sample component with example usage on sitecode fields
  */
 const ${exportVarName} = ({ fields }) => (
-  <Fragment>
+  <main>
     <Text tag="h2" field={fields.heading} />
     <RichText field={fields.content} />
-  </Fragment>
+  </main>
 );
 
 ${exportVarName}.propTypes = {
@@ -60,8 +60,7 @@ export default ${exportVarName};
     // template for minifest
     minifest: `import {
   CommonFieldTypes,
-  SitecoreIcon,
-  Manifest
+  SitecoreIcon
 } from "@sitecore-jss/sitecore-jss-manifest";
 
 /**
@@ -97,7 +96,7 @@ ${"```" +
 `
   };
 
-  if (templates.hasOwnProperty(template)) {
+  if (templates[template]) {
     return templates[template];
   }
 
